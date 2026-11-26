@@ -58,7 +58,15 @@ pub fn run(
     let hash = prepared.original_hash.to_hex();
     match victory_game::identify(&hash) {
         Some(build) => println!("build          {} ({hash})", build.label),
-        None => println!("build          unknown ({hash})"),
+        None => {
+            println!("build          unknown ({hash})");
+            // The patches of the title's code check its bytes first and leave
+            // a site whose bytes differ alone (`descriptor_sites`, ...).
+            tracing::warn!(
+                "not a build VIctory knows (victory_game::KNOWN_BUILDS): patches of the title's \
+                 code whose bytes differ here are left out, so expect some to be missing"
+            );
+        }
     }
 
     let images = cfg.cache_subdir("images")?;
